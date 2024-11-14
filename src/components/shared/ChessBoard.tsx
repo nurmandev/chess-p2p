@@ -2,10 +2,9 @@ import React from 'react';
 
 const ChessBoard: React.FC = () => {
   return (
-    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-      <div className="w-96 h-96 bg-white shadow-lg flex items-center justify-center">
-        <p className="text-gray-700 text-lg">Chess Board</p>
-      </div>
+    <div className="w-[400px] h-[400px] bg-gray-800 rounded-md shadow-lg flex items-center justify-center">
+      <p className="text-gray-400 text-lg">Chess Board</p>
+      {/* Placeholder; actual chessboard will replace this */}
     </div>
   );
 };
