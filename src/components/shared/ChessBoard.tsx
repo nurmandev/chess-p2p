@@ -5,12 +5,12 @@ interface ChessPieceProps {
   
   const ChessPiece: React.FC<ChessPieceProps> = ({ piece, color }) => {
     const pieceSymbols: { [key: string]: { [key: string]: string } } = {
-      'white': { 'king': '♔', 'queen': '♕', 'rook': '♖', 'bishop': '♗', 'knight': '♘', 'pawn': '♙' },
+      'white': { 'king': '♚', 'queen': '♛', 'rook': '♜', 'bishop': '♝', 'knight': '♞', 'pawn': '♟' },
       'black': { 'king': '♚', 'queen': '♛', 'rook': '♜', 'bishop': '♝', 'knight': '♞', 'pawn': '♟' }
     };
   
     return (
-      <span className={`text-4xl ${color === 'white' ? 'text-yellow-200' : 'text-gray-800'}`}>
+      <span className={`text-5xl ${color === 'white' ? 'text-yellow-100' : 'text-gray-800'}`}>
         {pieceSymbols[color][piece]}
       </span>
     );
@@ -39,7 +39,7 @@ interface ChessPieceProps {
             <div
               key={index}
               className={`aspect-square flex items-center justify-center
-                          ${(row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-500'}`}
+                          ${(row + col) % 2 === 0 ? 'bg-gray-400' : 'bg-gray-600'}`}
             >
               {piece && <ChessPiece piece={piece} color={pieceColor} />}
             </div>
