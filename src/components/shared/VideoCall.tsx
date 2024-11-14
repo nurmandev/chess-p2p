@@ -1,16 +1,26 @@
-import React from 'react';
+import { User, ChevronRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
-interface VideoCallProps {
-  player: string;
+interface PlayerPlaceholderProps {
+  label: string;
 }
 
-const VideoCall: React.FC<VideoCallProps> = ({ player }) => {
+const PlayerPlaceholder: React.FC<PlayerPlaceholderProps> = ({ label }) => (
+  <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col items-center justify-center aspect-video">
+    <User className="w-1/4 h-1/4 text-gray-400" />
+    <span className="mt-2 text-sm text-gray-400">{label}</span>
+  </div>
+);
+
+const VideoCall: React.FC = () => {
   return (
-    <div className="w-40 h-40 bg-gray-700 rounded-md flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-12 h-12 bg-gray-500 rounded-full mx-auto mb-2"></div>
-        <p className="text-gray-400 text-sm">{player}</p>
-      </div>
+    <div className="flex flex-col justify-between h-full space-y-4">
+      <PlayerPlaceholder label="Figure 1" />
+      <PlayerPlaceholder label="Figure 2" />
+      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+        <ChevronRight className="w-4 h-4 mr-2" />
+        Next Player
+      </Button>
     </div>
   );
 };

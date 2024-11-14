@@ -1,17 +1,27 @@
-import React from 'react';
+import { Play, Plus } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 const MovesList: React.FC = () => {
   return (
-    <div className="w-full bg-gray-800 rounded-md p-4 shadow-lg mb-4 h-3/4 overflow-y-auto">
-      <h2 className="text-lg font-bold text-gray-300 mb-2">Moves</h2>
-      <ul className="list-decimal list-inside space-y-1 text-gray-400">
-        <li>e2 to e4</li>
-        <li>d7 to d5</li>
-        {/* Placeholder moves; dynamically add moves here */}
-      </ul>
+    <div className="flex flex-col h-full">
+      <div className="bg-gray-900 border border-gray-800 rounded-lg flex-grow mb-4">
+        <div className="p-4">
+          <h2 className="text-lg font-semibold mb-2">Moves</h2>
+          {/* Moves will be displayed here */}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+          <Play className="w-4 h-4 mr-2" />
+          Play Game
+        </Button>
+        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+          <Plus className="w-4 h-4 mr-2" />
+          New Game
+        </Button>
+      </div>
     </div>
   );
 };
 
 export default MovesList;
-
