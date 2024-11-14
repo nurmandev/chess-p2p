@@ -1,5 +1,4 @@
-// src/components/ChessBoard.tsx
-export default function ChessBoard() {
+function ChessBoard() {
     const pieces = [
       "rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook",
       "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn",
@@ -22,7 +21,7 @@ export default function ChessBoard() {
             <div
               key={index}
               className={`aspect-square flex items-center justify-center
-                          ${(row + col) % 2 === 0 ? 'bg-gray-400' : 'bg-gray-600'}`}
+                          ${(row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-500'}`}
             >
               {piece && (
                 <ChessPiece piece={piece} color={pieceColor} />
@@ -37,7 +36,7 @@ export default function ChessBoard() {
   function ChessPiece({ piece, color }: { piece: string; color: 'white' | 'black' }) {
     const pieceSymbols: { [key: string]: { [key: string]: string } } = {
       'white': {
-        'king': '♚', 'queen': '♛', 'rook': '♜', 'bishop': '♝', 'knight': '♞', 'pawn': '♟'
+        'king': '♔', 'queen': '♕', 'rook': '♖', 'bishop': '♗', 'knight': '♘', 'pawn': '♙'
       },
       'black': {
         'king': '♚', 'queen': '♛', 'rook': '♜', 'bishop': '♝', 'knight': '♞', 'pawn': '♟'
@@ -45,9 +44,11 @@ export default function ChessBoard() {
     };
   
     return (
-      <span className={`text-5xl ${color === 'white' ? 'text-yellow-100' : 'text-gray-800'}`}>
+      <span className={`text-4xl ${color === 'white' ? 'text-yellow-200' : 'text-gray-800'}`}>
         {pieceSymbols[color][piece]}
       </span>
     );
   }
+  
+  export default ChessBoard;
   
