@@ -13,8 +13,8 @@ function PlayerPlaceholder({ label }: { label: string }) {
   export default function VideoCall() {
     return (
       <div className="flex flex-col justify-between space-y-4">
-        <PlayerPlaceholder label="Figure 2" />
-        <PlayerPlaceholder label="Figure 3" />
+        <PlayerPlaceholder label="Player 1" />
+        <PlayerPlaceholder label="Player 2" />
         <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white">
           <ChevronRight className="w-4 h-4 mr-2" />
           Next Player
