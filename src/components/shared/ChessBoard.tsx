@@ -44,7 +44,7 @@ function ChessBoard() {
     };
   
     return (
-      <span className={`text-4xl ${color === 'white' ? 'text-yellow-100' : 'text-gray-800'}`}>
+      <span className={`text-5xl ${color === 'white' ? 'text-yellow-100' : 'text-gray-800'}`}>
         {pieceSymbols[color][piece]}
       </span>
     );
