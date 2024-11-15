@@ -10,7 +10,7 @@ export default function GamePage() {
       </header>
       <main className="flex-grow flex items-center justify-center p-2 sm:p-4 lg:p-6">
         <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-auto w-full max-w-[90vw] max-h-[100vh] lg:overflow-hidden lg:transform lg:scale-90 lg:origin-top">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr,2fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
             <VideoCall />
             <div className="flex items-center justify-center">
               <ChessBoard />
