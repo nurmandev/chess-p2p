@@ -11,7 +11,7 @@ function ChessBoard() {
     ];
   
     return (
-      <div className="w-full max-w-2xl aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden">
+      <div className="w-[45rem] h-[45rem]  aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden">
         {pieces.map((piece, index) => {
           const row = Math.floor(index / 8);
           const col = index % 8;

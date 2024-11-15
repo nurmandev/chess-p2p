@@ -15,8 +15,8 @@ function PlayerPlaceholder({ label }: { label: string }) {
       <div className="flex flex-col justify-between space-y-4">
         <PlayerPlaceholder label="Player 1" />
         <PlayerPlaceholder label="Player 2" />
-        <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white">
-          <ChevronRight className="w-4 h-4 mr-2" />
+        <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-[2rem]">
+          <ChevronRight className="mr-2" style={{ width: '32px', height: '32px' }}/>
           Next Player
         </Button>
       </div>
