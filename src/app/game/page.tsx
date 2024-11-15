@@ -9,7 +9,7 @@ export default function GamePage() {
         <h1 className="text-2xl lg:text-3xl font-bold">Chess P2P</h1>
       </header>
       <main className="flex-grow flex items-center justify-center p-2 sm:p-4 lg:p-6">
-        <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden w-full max-w-[90vw] max-h-[90vh]">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden w-full max-w-[90vw] max-h-[90vh] transform scale-80 origin-center">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr,2fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
             <VideoCall />
             <div className="flex items-center justify-center">
