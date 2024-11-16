@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-900 text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full h-full flex flex-col items-center text-center">
         <h1 className="text-3xl font-bold mb-8">Welcome to Chess Peer-2-Peer</h1>
         <p className="text-md mb-4">
@@ -18,7 +18,7 @@ export default function Home() {
           Join a community of chess enthusiasts and make new friends while playing your favorite game.
         </p>
         <p className="text-lg mb-4">
-          Play chess with your friends in real-time. No sign-ups required, just start a match and enjoy!
+          Play chess globally with other players in real-time. No sign-ups required, just start a match and enjoy!
         </p>
         <Link href="/game">
           <button className="px-8 py-4 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600">
