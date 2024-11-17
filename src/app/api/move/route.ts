@@ -1,3 +1,5 @@
-export function placeholderRoute() {
-  console.log("This is a placeholder route.");
+import { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.status(200).json({ message: 'This is a placeholder response.' });
 }
