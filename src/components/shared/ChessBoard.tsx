@@ -73,7 +73,7 @@ function ChessBoard() {
   };
 
   return (
-    <div className="relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden">
+    <div className="relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default">
       {board.flatMap((row, rowIndex) =>
         row.map((square, colIndex) => {
           const squareName = `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`;
@@ -88,6 +88,7 @@ function ChessBoard() {
                 isWhiteSquare ? "bg-gray-400" : "bg-gray-600"
               }`}
               onClick={() => handleSquareClick(squareName)}
+              style={{ cursor: square ? 'grab' : 'default' }}
             >
               {square && (
                 <span
