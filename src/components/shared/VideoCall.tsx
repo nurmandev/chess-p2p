@@ -15,9 +15,9 @@ export default function VideoCall() {
     <div className="flex flex-col justify-between space-y-4 h-full">
       <PlayerPlaceholder label="Player 1" />
       <PlayerPlaceholder label="Player 2" />
-      <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white text-[2rem]">
+      <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
         <ChevronRight className="mr-2" style={{ width: '32px', height: '32px' }}/>
-        Next Player
+        <span className="hidden lg:inline">Next Player</span>
       </Button>
     </div>
   );
