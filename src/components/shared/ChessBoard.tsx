@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Chess, Square } from "chess.js";
+import { RefreshCw } from 'lucide-react';
 
 const chess = new Chess();
 
@@ -10,9 +11,10 @@ function ChessBoard() {
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
   const [board, setBoard] = useState(chess.board());
+  const [winner, setWinner] = useState<string | null>(null);
 
   const handleSquareClick = (square: string) => {
-    if (promotionSquare) return; // Block interactions during promotion
+    if (promotionSquare || winner) return; // Block interactions during promotion or after game over
 
     if (selectedSquare === square) {
       setSelectedSquare(null);
@@ -31,6 +33,9 @@ function ChessBoard() {
         setBoard(chess.board());
         setSelectedSquare(null);
         setValidMoves([]);
+        if (chess.isCheckmate()) {
+          setWinner(chess.turn() === 'w' ? 'Black' : 'White');
+        }
       } else {
         console.error("Invalid move:", { from: selectedSquare, to: square });
       }
@@ -68,12 +73,13 @@ function ChessBoard() {
   };
 
   return (
-    <div className="w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden">
+    <div className="relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden">
       {board.flatMap((row, rowIndex) =>
         row.map((square, colIndex) => {
           const squareName = `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`;
           const isValidMove = validMoves.includes(squareName);
           const isWhiteSquare = (rowIndex + colIndex) % 2 === 0;
+          const isKingInCheck = square?.type === 'k' && chess.inCheck() && square.color === chess.turn();
 
           return (
             <div
@@ -86,7 +92,7 @@ function ChessBoard() {
               {square && (
                 <span
                   className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl ${
-                    square.color === "w" ? "text-yellow-100" : "text-gray-800"
+                    isKingInCheck ? "text-red-500" : square.color === "w" ? "text-yellow-100" : "text-gray-800"
                   }`}>
                   {getPieceSymbol(square.type as 'p' | 'n' | 'b' | 'r' | 'q' | 'k', square.color)}
                 </span>
@@ -116,6 +122,21 @@ function ChessBoard() {
             </div>
           );
         })
+      )}
+      {winner && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20" style={{ borderRadius: '0px' }}>
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80" style={{ backdropFilter: 'none' }}>
+            <h2 className="text-2xl font-bold mb-4">{winner} wins!</h2>
+            <p className="mb-4">Congratulations to the winner!</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 mx-auto"
+            >
+              <RefreshCw size={20} />
+              Play Again
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
