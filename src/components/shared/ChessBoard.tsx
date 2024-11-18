@@ -125,7 +125,7 @@ function ChessBoard() {
       )}
       {winner && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20" style={{ borderRadius: '0px' }}>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80" style={{ backdropFilter: 'none' }}>
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto" style={{ backdropFilter: 'none' }}>
             <h2 className="text-2xl font-bold mb-4">{winner} wins!</h2>
             <p className="mb-4">Congratulations to the winner!</p>
             <button
