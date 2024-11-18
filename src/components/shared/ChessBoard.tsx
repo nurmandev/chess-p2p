@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react";
-import { Chess, Square } from "chess.js";
+import { Chess, Square, Move } from "chess.js";
 import { RefreshCw } from 'lucide-react';
 
 const chess = new Chess();
 
-function ChessBoard() {
+function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
@@ -36,6 +36,7 @@ function ChessBoard() {
         if (chess.isCheckmate()) {
           setWinner(chess.turn() === 'w' ? 'Black' : 'White');
         }
+        onMove?.(move);
       } else {
         console.error("Invalid move:", { from: selectedSquare, to: square });
       }
@@ -59,6 +60,7 @@ function ChessBoard() {
 
     if (move) {
       setBoard(chess.board());
+      onMove?.(move);
     } else {
       console.error("Invalid promotion move:", {
         from: selectedSquare,

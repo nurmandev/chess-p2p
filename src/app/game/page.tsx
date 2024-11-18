@@ -1,8 +1,18 @@
+"use client"
+
+import { useState } from 'react';
+import { Move } from 'chess.js';
 import VideoCall from '@/components/shared/VideoCall';
 import ChessBoard from '@/components/shared/ChessBoard';
 import MovesList from '@/components/shared/MovesList';
 
 export default function GamePage() {
+  const [moves, setMoves] = useState<Move[]>([]);
+
+  const handleMove = (move: Move) => {
+    setMoves(prev => [...prev, move]);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <header className="bg-gray-800 py-3 px-4 lg:py-4 lg:px-6 text-center">
@@ -13,9 +23,9 @@ export default function GamePage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
             <VideoCall />
             <div className="flex items-center justify-center">
-              <ChessBoard />
+              <ChessBoard onMove={handleMove} />
             </div>
-            <MovesList />
+            <MovesList moves={moves} />
           </div>
         </div>
       </main>
