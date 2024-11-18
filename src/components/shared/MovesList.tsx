@@ -22,7 +22,7 @@ export default function MovesList({ moves }: MovesListProps) {
         <h2 className="text-lg font-semibold mb-2 sticky top-0 bg-gray-700">Moves</h2>
         <div 
           ref={scrollRef}
-          className="overflow-y-auto max-h-[200px] sm:max-h-[300px] md:max-h-[350px] lg:max-h-[400px] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 pr-2"
+          className="overflow-y-auto h-[10vh] sm:h-[15vh] md:h-[35vh] lg:h-[45vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 pr-2"
         >
           <div className="grid grid-cols-2 gap-2">
             {moves.map((move, index) => (
