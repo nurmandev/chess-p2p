@@ -1,5 +1,31 @@
 import { User, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { useWebRTC } from '@/hooks/useWebRTC';
+import { useEffect, useRef } from 'react';
+
+function VideoStream({ stream, label }: { stream: MediaStream | null, label: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  if (!stream) {
+    return <PlayerPlaceholder label={label} />;
+  }
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      playsInline
+      muted={label === "You"}
+      className="w-full aspect-[4/3] rounded-lg object-cover"
+    />
+  );
+}
 
 function PlayerPlaceholder({ label }: { label: string }) {
   return (
@@ -10,11 +36,13 @@ function PlayerPlaceholder({ label }: { label: string }) {
   );
 }
 
-export default function VideoCall() {
+export default function VideoCall({ userId, remoteUserId }: { userId: string, remoteUserId: string | null }) {
+  const { localStream, remoteStream } = useWebRTC(userId, remoteUserId);
+
   return (
     <div className="flex flex-col justify-between space-y-4 h-full">
-      <PlayerPlaceholder label="Player 1" />
-      <PlayerPlaceholder label="Player 2" />
+      <VideoStream stream={localStream} label="You" />
+      <VideoStream stream={remoteStream} label="Opponent" />
       <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
         <ChevronRight className="mr-2" style={{ width: '32px', height: '32px' }}/>
         <span className="hidden lg:inline">Next Player</span>
