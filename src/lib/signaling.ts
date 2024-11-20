@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface SignalingMessage {
   type: 'offer' | 'answer' | 'candidate';
   senderId: string;
@@ -5,15 +6,34 @@ export interface SignalingMessage {
 }
 
 export async function sendSignal(message: SignalingMessage) {
-  await fetch('/api/signalling', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(message),
-  });
+  try {
+    const response = await fetch('/api/signaling', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(message),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Signaling error: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Failed to send signal:', error);
+    throw error;
+  }
 }
 
 export async function pollSignals(userId: string): Promise<SignalingMessage[]> {
-  const response = await fetch(`/api/signalling?recipientId=${userId}`);
-  const data = await response.json();
-  return data.messages || [];
+  try {
+    const response = await fetch(`/api/signaling?recipientId=${userId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Polling error: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return data.messages || [];
+  } catch (error) {
+    console.error('Failed to poll signals:', error);
+    return [];
+  }
 }
