@@ -1,9 +1,15 @@
-import { User, ChevronRight } from 'lucide-react';
+import { User, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useWebRTC } from '@/hooks/useWebRTC';
-import { useEffect, useRef } from 'react';
+import { useWebRTC } from "@/hooks/useWebRTC";
+import { useEffect, useRef } from "react";
 
-function VideoStream({ stream, label }: { stream: MediaStream | null, label: string }) {
+function VideoStream({
+  stream,
+  label,
+}: {
+  stream: MediaStream | null;
+  label: string;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -36,7 +42,13 @@ function PlayerPlaceholder({ label }: { label: string }) {
   );
 }
 
-export default function VideoCall({ userId, remoteUserId }: { userId: string, remoteUserId: string | null }) {
+export default function VideoCall({
+  userId,
+  remoteUserId,
+}: {
+  userId: string;
+  remoteUserId: string | null;
+}) {
   const { localStream, remoteStream } = useWebRTC(userId, remoteUserId);
 
   return (
@@ -44,7 +56,10 @@ export default function VideoCall({ userId, remoteUserId }: { userId: string, re
       <VideoStream stream={localStream} label="You" />
       <VideoStream stream={remoteStream} label="Opponent" />
       <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
-        <ChevronRight className="mr-2" style={{ width: '32px', height: '32px' }}/>
+        <ChevronRight
+          className="mr-2"
+          style={{ width: "32px", height: "32px" }}
+        />
         <span className="hidden lg:inline">Next Player</span>
       </Button>
     </div>
