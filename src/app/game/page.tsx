@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Move } from 'chess.js';
+import { v4 as uuidv4 } from 'uuid';
 import { useMatchmaking } from '@/hooks/useMatchmaking';
 import VideoCall from '@/components/shared/VideoCall';
 import ChessBoard from '@/components/shared/ChessBoard';
@@ -9,7 +10,7 @@ import MovesList from '@/components/shared/MovesList';
 
 export default function GamePage() {
   const [moves, setMoves] = useState<Move[]>([]);
-  const [userId] = useState(() => Math.random().toString(36).substr(2, 9));
+  const [userId] = useState(() => uuidv4());
   const { status, match, findMatch } = useMatchmaking();
 
   useEffect(() => {
