@@ -43,7 +43,14 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
       });
 
       pc.ontrack = (event) => {
-        setRemoteStream(new MediaStream([event.track]));
+        setRemoteStream(prevStream => {
+          if (!prevStream) {
+            return new MediaStream([event.track]);
+          } else {
+            prevStream.addTrack(event.track);
+            return prevStream;
+          }
+        });
       };
 
       pc.onicecandidate = (event) => {
