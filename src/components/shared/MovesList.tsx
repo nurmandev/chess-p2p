@@ -1,6 +1,4 @@
 import { Move } from "chess.js";
-import { Play, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
 
 interface MovesListProps {
@@ -42,16 +40,6 @@ export default function MovesList({ moves }: MovesListProps) {
             ))}
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-col">
-        <Button className="mb-2 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full">
-          <Play className="mr-2" style={{ width: "32px", height: "32px" }} />
-          <span className="hidden lg:inline text-[2rem]">Play Match</span>
-        </Button>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full">
-          <Plus className="mr-2" style={{ width: "32px", height: "32px" }} />
-          <span className="hidden lg:inline text-[2rem]">New Match</span>
-        </Button>
       </div>
     </div>
   );

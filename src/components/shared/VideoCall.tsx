@@ -1,5 +1,4 @@
-import { User, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { User } from "lucide-react";
 import { useWebRTC } from "@/hooks/useWebRTC";
 import { useEffect, useRef } from "react";
 
@@ -55,13 +54,6 @@ export default function VideoCall({
     <div className="flex flex-col justify-between space-y-4 h-full">
       <VideoStream stream={localStream} label="You" />
       <VideoStream stream={remoteStream} label="Opponent" />
-      <Button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
-        <ChevronRight
-          className="mr-2"
-          style={{ width: "32px", height: "32px" }}
-        />
-        <span className="hidden lg:inline">Next Player</span>
-      </Button>
     </div>
   );
 }
