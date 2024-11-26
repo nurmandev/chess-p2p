@@ -1,9 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
 import { pollSignals, sendSignal } from '@/lib/signaling';
+import { turnServerConfig } from '@/config/turnServerConfig';
 
 const configuration = {
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    {
+      urls: "stun:stun.relay.metered.ca:80",
+    },
+    ...turnServerConfig
+  ]
 };
 
 export function useWebRTC(userId: string, remoteUserId: string | null) {
