@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 export const useMatchmaking = () => {
   const [status, setStatus] = useState<string>("idle");
   const [match, setMatch] = useState<any>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [playerSide, setPlayerSide] = useState<'white' | 'black' | null>(null);
   const pollingInterval = useRef<NodeJS.Timeout>();
 
   const findMatch = async (userId: string) => {
@@ -19,6 +21,8 @@ export const useMatchmaking = () => {
       if (data.match) {
         setMatch(data.match);
         setStatus("matched");
+        setRoomId(data.match.roomId);
+        setPlayerSide(data.match.playerSides[userId]);
       } else {
         setStatus("waiting");
         // Start polling for match
@@ -39,6 +43,8 @@ export const useMatchmaking = () => {
         if (data.match) {
           setMatch(data.match);
           setStatus("matched");
+          setRoomId(data.match.roomId);
+          setPlayerSide(data.match.playerSides[userId]);
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current);
           }
@@ -57,5 +63,5 @@ export const useMatchmaking = () => {
     };
   }, []);
 
-  return { status, match, findMatch };
+  return { status, match, roomId, playerSide, findMatch };
 };

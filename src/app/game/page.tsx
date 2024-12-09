@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 export default function GamePage() {
   const [moves, setMoves] = useState<Move[]>([]);
   const [userId] = useState(() => uuidv4());
-  const { status, match, findMatch } = useMatchmaking();
+  const { status, match, roomId, playerSide, findMatch } = useMatchmaking();
 
   useEffect(() => {
     findMatch(userId);
@@ -49,7 +49,7 @@ export default function GamePage() {
               </Button>
             </div>
             <div className="flex items-center justify-center">
-              <ChessBoard onMove={handleMove} />
+              <ChessBoard onMove={handleMove} roomId={roomId} playerSide={playerSide} />
             </div>
             <div className="flex flex-col">
               <MovesList moves={moves} />

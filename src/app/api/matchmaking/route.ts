@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addToQueue, findOpponent, saveMatch, getMatch } from "@/lib/matchmaking";
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,8 +10,16 @@ export async function POST(req: NextRequest) {
     const opponent = await findOpponent();
     
     if (opponent) {
-      // If found an opponent, create a match
-      const match = { player1: opponent, player2: userId };
+      const roomId = uuidv4();
+      const match = {
+        player1: opponent,
+        player2: userId,
+        roomId,
+        playerSides: {
+          [opponent]: 'white',
+          [userId]: 'black',
+        },
+      };
       await saveMatch(match);
       return NextResponse.json({ match });
     }

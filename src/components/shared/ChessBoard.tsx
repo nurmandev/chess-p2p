@@ -1,20 +1,41 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Chess, Square, Move } from "chess.js";
 import { RefreshCw } from 'lucide-react';
+import io from 'socket.io-client';
 
 const chess = new Chess();
 
-function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
+function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => void; roomId: string; playerSide: 'white' | 'black' }) {
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
   const [board, setBoard] = useState(chess.board());
   const [winner, setWinner] = useState<string | null>(null);
+  const [socket, setSocket] = useState<any>(null);
+
+  useEffect(() => {
+    const newSocket = io();
+    setSocket(newSocket);
+
+    newSocket.emit('joinRoom', roomId);
+
+    newSocket.on('opponentMove', (moveData) => {
+      chess.move(moveData);
+      setBoard(chess.board());
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [roomId]);
+
+  const isPlayerTurn = chess.turn() === (playerSide === 'white' ? 'w' : 'b');
 
   const handleSquareClick = (square: string) => {
-    if (promotionSquare || winner) return; // Block interactions during promotion or after game over
+    if (!isPlayerTurn || promotionSquare || winner) return;
 
     if (selectedSquare === square) {
       setSelectedSquare(null);
@@ -30,6 +51,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
       const move = chess.move({ from: selectedSquare, to: square });
 
       if (move) {
+        handleMove(move);
         setBoard(chess.board());
         setSelectedSquare(null);
         setValidMoves([]);
@@ -49,6 +71,10 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
     }
   };
 
+  const handleMove = (move: Move) => {
+    socket.emit('playerMove', { roomId, move });
+  };
+
   const handlePromotion = (piece: string) => {
     if (!promotionSquare || !selectedSquare) return;
 
@@ -59,6 +85,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
     });
 
     if (move) {
+      handleMove(move);
       setBoard(chess.board());
       onMove?.(move);
     } else {
@@ -75,9 +102,9 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
   };
 
   return (
-    <div className="relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default">
-      {board.flatMap((row, rowIndex) =>
-        row.map((square, colIndex) => {
+    <div className={`relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default ${playerSide === 'black' ? 'rotate-180' : ''}`}>
+      {board.flatMap((row, rowIndex) => {
+        return row.map((square, colIndex) => {
           const squareName = `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`;
           const isValidMove = validMoves.includes(squareName);
           const isWhiteSquare = (rowIndex + colIndex) % 2 === 0;
@@ -96,7 +123,8 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
                 <span
                   className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl ${
                     isKingInCheck ? "text-red-500" : square.color === "w" ? "text-yellow-100" : "text-gray-800"
-                  }`}>
+                  } ${playerSide === 'black' ? 'transform rotate-180' : ''}`}
+                >
                   {getPieceSymbol(square.type as 'p' | 'n' | 'b' | 'r' | 'q' | 'k', square.color)}
                 </span>
               )}
@@ -124,8 +152,8 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
               )}
             </div>
           );
-        })
-      )}
+        });
+      })}
       {winner && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20" style={{ borderRadius: '0px' }}>
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto" style={{ backdropFilter: 'none' }}>
@@ -137,6 +165,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
             >
               <RefreshCw size={20} />
               Play Again
+
             </button>
           </div>
         </div>
