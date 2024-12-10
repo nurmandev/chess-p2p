@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addToQueue, findOpponent, saveMatch, getMatch } from "@/lib/matchmaking";
 import { v4 as uuidv4 } from 'uuid';
+import { Match } from "@/lib/matchmaking"; // Assume Match type is defined here
 
+// Handle POST requests to find or create a match
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await req.json();
     
-    // First check if there's an opponent
+    // Check if there's an available opponent
     const opponent = await findOpponent();
     
     if (opponent) {
+      // Create a new match with the opponent
       const roomId = uuidv4();
-      const match = {
+      const match: Match = {
         player1: opponent,
         player2: userId,
         roomId,
@@ -24,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ match });
     }
     
-    // If no opponent found, add user to queue
+    // If no opponent is found, add the user to the matchmaking queue
     await addToQueue(userId);
     return NextResponse.json({ message: "Added to queue" });
   } catch (error) {
@@ -33,6 +36,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Handle GET requests to retrieve a user's match
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("userId");
   if (!userId) {

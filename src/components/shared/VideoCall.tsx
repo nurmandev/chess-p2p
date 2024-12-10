@@ -2,6 +2,7 @@ import { User } from "lucide-react";
 import { useWebRTC } from "@/hooks/useWebRTC";
 import { useEffect, useRef } from "react";
 
+// Component to display a video stream with a label
 function VideoStream({
   stream,
   label,
@@ -32,6 +33,7 @@ function VideoStream({
   );
 }
 
+// Placeholder component when no video stream is available
 function PlayerPlaceholder({ label }: { label: string }) {
   return (
     <div className="bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center aspect-[4/3] w-full">
@@ -41,6 +43,7 @@ function PlayerPlaceholder({ label }: { label: string }) {
   );
 }
 
+// Main VideoCall component managing local and remote streams
 export default function VideoCall({
   userId,
   remoteUserId,

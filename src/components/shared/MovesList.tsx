@@ -1,14 +1,17 @@
 import { Move } from "chess.js";
 import { useEffect, useRef } from "react";
 
+// Interface for component props
 interface MovesListProps {
   moves: Move[];
 }
 
+// MovesList component displays a list of chess moves and auto-scrolls on update
 export default function MovesList({ moves }: MovesListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Scroll to the bottom when new moves are added
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }

@@ -1,3 +1,4 @@
+// Configuration for TURN servers to assist in NAT traversal
 export const turnServerConfig = [
   {
     urls: "turn:global.relay.metered.ca:80",

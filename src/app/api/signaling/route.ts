@@ -3,8 +3,10 @@ import redis from "@/lib/redis";
 
 const SIGNALING_KEY_PREFIX = "signaling:";
 
+// Handle POST requests to send signaling messages
 export async function POST(req: NextRequest) {
   try {
+    // Parse the signaling message from the request
     const signal = await req.json();
     const recipientId = signal.data.recipientId;
 
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Handle GET requests to retrieve signaling messages for a recipient
 export async function GET(req: NextRequest) {
   try {
     const recipientId = req.nextUrl.searchParams.get("recipientId");

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useState, useEffect, useRef } from "react";
 
+// Custom hook to manage matchmaking state and actions
 export const useMatchmaking = () => {
   const [status, setStatus] = useState<string>("idle");
   const [match, setMatch] = useState<any>(null);
@@ -8,6 +10,7 @@ export const useMatchmaking = () => {
   const [playerSide, setPlayerSide] = useState<'white' | 'black' | null>(null);
   const pollingInterval = useRef<NodeJS.Timeout>();
 
+  // Function to find a match for a user
   const findMatch = async (userId: string) => {
     setStatus("searching");
     try {
@@ -34,6 +37,7 @@ export const useMatchmaking = () => {
     }
   };
 
+  // Function to start polling for a match
   const startPolling = (userId: string) => {
     pollingInterval.current = setInterval(async () => {
       try {
@@ -56,6 +60,7 @@ export const useMatchmaking = () => {
   };
 
   useEffect(() => {
+    // Cleanup polling on unmount
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);

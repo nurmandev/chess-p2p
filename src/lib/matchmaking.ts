@@ -1,5 +1,6 @@
 import client from "./redis";
 
+// Define the structure of a Match
 export interface Match {
   player1: string;
   player2: string;
@@ -22,7 +23,7 @@ export async function findOpponent(): Promise<string | null> {
 }
 
 /**
- * Save the details of a match.
+ * Save the details of a match to Redis.
  */
 export async function saveMatch(match: Match): Promise<void> {
   const matchKey = `match:${match.player1}`;

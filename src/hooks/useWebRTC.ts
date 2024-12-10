@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { pollSignals, sendSignal } from '@/lib/signaling';
 import { turnServerConfig } from '@/config/turnServerConfig';
 
+// Configuration for ICE servers including TURN servers
 const configuration = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
@@ -13,6 +14,7 @@ const configuration = {
   ]
 };
 
+// Custom hook to manage WebRTC connections
 export function useWebRTC(userId: string, remoteUserId: string | null) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -24,6 +26,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
   const pendingCandidates = useRef<RTCIceCandidate[]>([]);
 
   useEffect(() => {
+    // Setup local media stream
     async function setupMediaStream() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -35,6 +38,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     setupMediaStream();
 
     return () => {
+      // Cleanup local media tracks
       localStream?.getTracks().forEach(track => track.stop());
     };
   }, []);
@@ -42,6 +46,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
   useEffect(() => {
     if (!remoteUserId || !localStream) return;
 
+    // Initialize peer connection and handle signaling
     const setupPeerConnection = () => {
       peerConnection.current = new RTCPeerConnection(configuration);
       const pc = peerConnection.current;
@@ -83,6 +88,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     startPolling();
 
     return () => {
+      // Cleanup peer connection and polling
       peerConnection.current?.close();
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
@@ -90,6 +96,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     };
   }, [remoteUserId, localStream, userId]);
 
+  // Function to initiate signaling by creating an offer
   async function startSignaling() {
     if (!peerConnection.current || !remoteUserId) return;
 
@@ -107,6 +114,7 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     }
   }
 
+  // Function to poll for incoming signaling messages
   async function startPolling() {
     pollingInterval.current = setInterval(async () => {
       try {
