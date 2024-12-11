@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Footer from '@/components/shared/Footer';
 
 // Home page component welcoming users and providing navigation
 export default function Home() {
@@ -33,9 +34,9 @@ export default function Home() {
           Contribute to the project on <a href="https://github.com/your-repo" className="text-green-500 hover:underline">GitHub</a>.
         </p>
       </div>
-      <footer className="mt-4 text-center text-gray-400">
-        <p>Made with ❤️ by <a href="https://x.com/JatinSriva36542?t=jInLA9mjPJc3klWMBmAhDg&s=09" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Jatin</a></p>
-      </footer>
+      <div className="mt-4">
+        <Footer />
+      </div>
     </div>
   );
 }
