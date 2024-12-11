@@ -39,7 +39,7 @@ function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => v
     return () => {
       newSocket.disconnect();
     };
-  }, [onMove, roomId]);
+  }, [roomId]); // Removed onMove from dependency array
 
   // Determine if it's the player's turn based on their side
   const isPlayerTurn = chess.turn() === (playerSide === 'white' ? 'w' : 'b');
@@ -69,7 +69,8 @@ function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => v
         if (chess.isCheckmate()) {
           setWinner(chess.turn() === 'w' ? 'Black' : 'White');
         }
-        onMove?.(move);
+        // Removed redundant call to onMove
+        // onMove?.(move);
       } else {
         console.error("Invalid move:", { from: selectedSquare, to: square });
       }
