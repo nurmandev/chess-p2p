@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 
+// Create a Redis client with configuration from environment variables
 const client = createClient({
   password: process.env.REDIS_PASSWORD,
   socket: {
@@ -8,8 +9,10 @@ const client = createClient({
   },
 });
 
+// Handle Redis client errors
 client.on("error", (err) => console.error("Redis Client Error:", err));
 
+// Connect to Redis if not already connected
 (async () => {
   if (!client.isOpen) {
     await client.connect();

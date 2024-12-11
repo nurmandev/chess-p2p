@@ -1,20 +1,52 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Chess, Square, Move } from "chess.js";
 import { RefreshCw } from 'lucide-react';
+import io from 'socket.io-client';
 
 const chess = new Chess();
 
-function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
+// Initialize the ChessBoard component with props for handling moves, room ID, and player side
+function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => void; roomId: string; playerSide: 'white' | 'black' }) {
+  // State to track the selected square
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
+  // State to store valid moves from the selected square
   const [validMoves, setValidMoves] = useState<string[]>([]);
+  // State to handle pawn promotion
   const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
+  // State to represent the current board configuration
   const [board, setBoard] = useState(chess.board());
+  // State to determine the winner of the game
   const [winner, setWinner] = useState<string | null>(null);
+  // State to manage the socket connection
+  const [socket, setSocket] = useState<any>(null);
 
+  // Establish socket connection and handle opponent's moves
+  useEffect(() => {
+    const newSocket = io();
+    setSocket(newSocket);
+
+    newSocket.emit('joinRoom', roomId);
+
+    newSocket.on('opponentMove', (moveData) => {
+      chess.move(moveData);
+      setBoard(chess.board());
+      onMove?.(moveData); // Pass the opponent's move to the parent
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [roomId]); // Removed onMove from dependency array
+
+  // Determine if it's the player's turn based on their side
+  const isPlayerTurn = chess.turn() === (playerSide === 'white' ? 'w' : 'b');
+
+  // Handle clicks on chessboard squares
   const handleSquareClick = (square: string) => {
-    if (promotionSquare || winner) return; // Block interactions during promotion or after game over
+    if (!isPlayerTurn || promotionSquare || winner) return;
 
     if (selectedSquare === square) {
       setSelectedSquare(null);
@@ -30,13 +62,15 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
       const move = chess.move({ from: selectedSquare, to: square });
 
       if (move) {
+        handleMove(move);
         setBoard(chess.board());
         setSelectedSquare(null);
         setValidMoves([]);
         if (chess.isCheckmate()) {
           setWinner(chess.turn() === 'w' ? 'Black' : 'White');
         }
-        onMove?.(move);
+        // Removed redundant call to onMove
+        // onMove?.(move);
       } else {
         console.error("Invalid move:", { from: selectedSquare, to: square });
       }
@@ -49,6 +83,13 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
     }
   };
 
+  // Emit the player's move to the server
+  const handleMove = (move: Move) => {
+    socket.emit('playerMove', { roomId, move });
+    onMove?.(move); // Ensure your own moves are also passed up
+  };
+
+  // Handle pawn promotion selection
   const handlePromotion = (piece: string) => {
     if (!promotionSquare || !selectedSquare) return;
 
@@ -59,6 +100,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
     });
 
     if (move) {
+      handleMove(move);
       setBoard(chess.board());
       onMove?.(move);
     } else {
@@ -75,9 +117,10 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
   };
 
   return (
-    <div className="relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default">
-      {board.flatMap((row, rowIndex) =>
-        row.map((square, colIndex) => {
+    // Render the chessboard grid with pieces and handle user interactions
+    <div className={`relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default ${playerSide === 'black' ? 'rotate-180' : ''}`}>
+      {board.flatMap((row, rowIndex) => {
+        return row.map((square, colIndex) => {
           const squareName = `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`;
           const isValidMove = validMoves.includes(squareName);
           const isWhiteSquare = (rowIndex + colIndex) % 2 === 0;
@@ -96,7 +139,8 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
                 <span
                   className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl ${
                     isKingInCheck ? "text-red-500" : square.color === "w" ? "text-yellow-100" : "text-gray-800"
-                  }`}>
+                  } ${playerSide === 'black' ? 'transform rotate-180' : ''}`}
+                >
                   {getPieceSymbol(square.type as 'p' | 'n' | 'b' | 'r' | 'q' | 'k', square.color)}
                 </span>
               )}
@@ -124,8 +168,8 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
               )}
             </div>
           );
-        })
-      )}
+        });
+      })}
       {winner && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20" style={{ borderRadius: '0px' }}>
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto" style={{ backdropFilter: 'none' }}>
@@ -137,6 +181,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
             >
               <RefreshCw size={20} />
               Play Again
+
             </button>
           </div>
         </div>
@@ -145,6 +190,7 @@ function ChessBoard({ onMove }: { onMove?: (move: Move) => void }) {
   );
 }
 
+// Define symbols for chess pieces
 const symbols: { [key in 'p' | 'r' | 'n' | 'b' | 'q' | 'k']: string } = {
   p: "♟",
   r: "♜",
@@ -154,6 +200,7 @@ const symbols: { [key in 'p' | 'r' | 'n' | 'b' | 'q' | 'k']: string } = {
   k: "♚",
 };
 
+// Return the appropriate symbol based on piece type and color
 function getPieceSymbol(type: 'p' | 'r' | 'n' | 'b' | 'q' | 'k', color: string) {
   return color === "w" ? symbols[type].toUpperCase() : symbols[type];
 }
