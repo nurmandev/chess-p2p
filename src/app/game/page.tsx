@@ -41,7 +41,7 @@ export default function GamePage() {
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header status={status} matchFound={!!match} />
       
-      <main className="flex-grow flex items-center justify-center p-2 sm:p-4 lg:p-[1rem]">
+      <main className="flex-grow flex items-center justify-center pb-2 px-2 sm:px-4 lg:px-[1rem] mb-4">
         <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-auto w-full max-w-[90vw] max-h-[100vh] lg:overflow-hidden">
           {/* Grid layout for video call, chessboard, and moves list */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
