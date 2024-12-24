@@ -20,7 +20,7 @@ export default function Header({ status, matchFound }: HeaderProps) {
   };
 
   return (
-    <header className="flex justify-center w-full bg-gray-900 py-3 px-4 lg:py-4">
+    <header className="flex justify-center w-full bg-gray-900 pt-3 px-4 lg:pt-4">
       <div className="flex items-center gap-4 max-w-3xl">
         <h1 className="text-2xl lg:text-3xl font-bold">Chess P2P</h1>
         <div className="flex items-center gap-2">
