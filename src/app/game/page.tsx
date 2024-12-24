@@ -53,16 +53,13 @@ export default function GamePage() {
                 remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
               />
               <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
-                <ChevronRight
-                  className="mr-2"
-                  style={{ width: "32px", height: "32px" }}
-                />
+                <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
                 <span className="hidden lg:inline">Next Player</span>
               </Button>
             </div>
             
             {/* Chessboard component */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center overflow-hidden">
               <ChessBoard onMove={handleMove} roomId={roomId} playerSide={playerSide} />
             </div>
             

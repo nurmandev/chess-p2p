@@ -23,7 +23,7 @@ function VideoStream({
   }
 
   return (
-    <div className="w-full aspect-[4/3]">
+    <div className="w-full aspect-[4/3] min-h-[35vh] max-h-[40vh]">
       <video
         ref={videoRef}
         autoPlay
@@ -38,7 +38,7 @@ function VideoStream({
 // Placeholder component when no video stream is available
 function PlayerPlaceholder({ label }: { label: string }) {
   return (
-    <div className="w-full aspect-[4/3] bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
+    <div className="w-full aspect-[4/3] min-h-[35vh] max-h-[40vh] bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
       <User className="w-1/3 h-1/3 text-gray-400" />
       <span className="mt-4 text-lg text-gray-400">{label}</span>
     </div>
@@ -46,17 +46,17 @@ function PlayerPlaceholder({ label }: { label: string }) {
 }
 
 // Main VideoCall component managing local and remote streams
-export default function VideoCall({
-  userId,
-  remoteUserId,
-}: {
+interface VideoCallProps {
   userId: string;
   remoteUserId: string | null;
-}) {
+  className?: string; // <-- Added this optional property
+}
+
+export default function VideoCall({ userId, remoteUserId, className }: VideoCallProps) {
   const { localStream, remoteStream } = useWebRTC(userId, remoteUserId);
 
   return (
-    <div className="flex flex-col justify-between space-y-4 h-full">
+    <div className={`flex flex-col gap-4 ${className || ""}`}>
       <VideoStream stream={localStream} label="You" />
       <VideoStream stream={remoteStream} label="Opponent" />
     </div>
