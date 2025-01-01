@@ -1,29 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
-import { Chess, Square, Move } from "chess.js";
+import { Chess, Move } from "chess.js";
+import { Chessboard } from "react-chessboard";
 import { RefreshCw } from 'lucide-react';
 import io from 'socket.io-client';
 
 const chess = new Chess();
 
-// Initialize the ChessBoard component with props for handling moves, room ID, and player side
-function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => void; roomId: string; playerSide: 'white' | 'black' }) {
-  // State to track the selected square
-  const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  // State to store valid moves from the selected square
-  const [validMoves, setValidMoves] = useState<string[]>([]);
-  // State to handle pawn promotion
-  const [promotionSquare, setPromotionSquare] = useState<string | null>(null);
-  // State to represent the current board configuration
+function ChessBoard({ onMove, roomId, playerSide }: { 
+  onMove?: (move: Move) => void; 
+  roomId: string; 
+  playerSide: 'white' | 'black' 
+}) {
   const [board, setBoard] = useState(chess.board());
-  // State to determine the winner of the game
   const [winner, setWinner] = useState<string | null>(null);
-  // State to manage the socket connection
   const [socket, setSocket] = useState<any>(null);
 
-  // Establish socket connection and handle opponent's moves
   useEffect(() => {
     const newSocket = io();
     setSocket(newSocket);
@@ -33,176 +26,73 @@ function ChessBoard({ onMove, roomId, playerSide }: { onMove?: (move: Move) => v
     newSocket.on('opponentMove', (moveData) => {
       chess.move(moveData);
       setBoard(chess.board());
-      onMove?.(moveData); // Pass the opponent's move to the parent
+      onMove?.(moveData);
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [roomId]); // Removed onMove from dependency array
+  }, [roomId]);
 
-  // Determine if it's the player's turn based on their side
   const isPlayerTurn = chess.turn() === (playerSide === 'white' ? 'w' : 'b');
 
-  // Handle clicks on chessboard squares
-  const handleSquareClick = (square: string) => {
-    if (!isPlayerTurn || promotionSquare || winner) return;
+  function onDrop(sourceSquare: string, targetSquare: string, piece: string) {
+    if (!isPlayerTurn || winner) return false;
 
-    if (selectedSquare === square) {
-      setSelectedSquare(null);
-      setValidMoves([]);
-    } else if (selectedSquare && validMoves.includes(square)) {
-      const promotionNeeded = validMoves.includes(square) && chess.get(selectedSquare as Square)?.type === "p" && (square[1] === "1" || square[1] === "8");
-
-      if (promotionNeeded) {
-        setPromotionSquare(square);
-        return;
-      }
-
-      const move = chess.move({ from: selectedSquare, to: square });
+    try {
+      const move = chess.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: piece[1]?.toLowerCase() === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1') ? 'q' : undefined,
+      });
 
       if (move) {
-        handleMove(move);
+        socket.emit('playerMove', { roomId, move });
+        onMove?.(move);
         setBoard(chess.board());
-        setSelectedSquare(null);
-        setValidMoves([]);
+
         if (chess.isCheckmate()) {
           setWinner(chess.turn() === 'w' ? 'Black' : 'White');
         }
-        // Removed redundant call to onMove
-        // onMove?.(move);
-      } else {
-        console.error("Invalid move:", { from: selectedSquare, to: square });
+        return true;
       }
-    } else {
-      const moves = chess.moves({ square: square as Square, verbose: true }).map((move) => move.to);
-      if (moves.length > 0) {
-        setSelectedSquare(square);
-        setValidMoves(moves);
-      }
+    } catch (error) {
+      console.error("Invalid move:", error);
     }
-  };
-
-  // Emit the player's move to the server
-  const handleMove = (move: Move) => {
-    socket.emit('playerMove', { roomId, move });
-    onMove?.(move); // Ensure your own moves are also passed up
-  };
-
-  // Handle pawn promotion selection
-  const handlePromotion = (piece: string) => {
-    if (!promotionSquare || !selectedSquare) return;
-
-    const move = chess.move({
-      from: selectedSquare,
-      to: promotionSquare,
-      promotion: piece as 'q' | 'r' | 'b' | 'n',
-    });
-
-    if (move) {
-      handleMove(move);
-      setBoard(chess.board());
-      onMove?.(move);
-    } else {
-      console.error("Invalid promotion move:", {
-        from: selectedSquare,
-        to: promotionSquare,
-        promotion: piece,
-      });
-    }
-
-    setPromotionSquare(null);
-    setSelectedSquare(null);
-    setValidMoves([]);
-  };
+    return false;
+  }
 
   return (
-    // Render the chessboard grid with pieces and handle user interactions
-    <div className={`relative w-full h-full aspect-square grid grid-cols-8 gap-px bg-gray-600 p-px rounded-lg overflow-hidden cursor-default ${playerSide === 'black' ? 'rotate-180' : ''}`}>
-      {board.flatMap((row, rowIndex) => {
-        return row.map((square, colIndex) => {
-          const squareName = `${String.fromCharCode(97 + colIndex)}${8 - rowIndex}`;
-          const isValidMove = validMoves.includes(squareName);
-          const isWhiteSquare = (rowIndex + colIndex) % 2 === 0;
-          const isKingInCheck = square?.type === 'k' && chess.inCheck() && square.color === chess.turn();
-
-          return (
-            <div
-              key={squareName}
-              className={`aspect-square flex items-center justify-center relative ${
-                isWhiteSquare ? "bg-gray-400" : "bg-gray-600"
-              }`}
-              onClick={() => handleSquareClick(squareName)}
-              style={{ cursor: square ? 'grab' : 'default' }}
-            >
-              {square && (
-                <span
-                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl ${
-                    isKingInCheck ? "text-red-500" : square.color === "w" ? "text-yellow-100" : "text-gray-800"
-                  } ${playerSide === 'black' ? 'transform rotate-180' : ''}`}
-                >
-                  {getPieceSymbol(square.type as 'p' | 'n' | 'b' | 'r' | 'q' | 'k', square.color)}
-                </span>
-              )}
-
-              {isValidMove && (
-                <div className="w-4 h-4 bg-green-500 rounded-full absolute"></div>
-              )}
-
-              {promotionSquare === squareName && (
-                <div
-                  className={`absolute flex flex-col items-center bg-gray-800 p-2 rounded-md gap-1 z-10 ${
-                    squareName[1] === "8" ? "top-0" : "bottom-0"
-                  }`}
-                >
-                  {["q", "r", "b", "n"].map((piece) => (
-                    <button
-                      key={piece}
-                      onClick={() => handlePromotion(piece)}
-                      className="text-lg sm:text-2xl md:text-3xl lg:text-4xl text-white hover:bg-gray-700 p-2 rounded-md w-full text-center"
-                    >
-                      {getPieceSymbol(piece as 'p' | 'n' | 'b' | 'r' | 'q' | 'k', "w")}
-                    </button>
-                  ))}
-                </div>
-              )}
+    <div className="w-full h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] flex items-center justify-center">
+      <div className="w-full h-full aspect-square relative">
+        <Chessboard 
+          position={chess.fen()}
+          onPieceDrop={onDrop}
+          boardOrientation={playerSide}
+          customBoardStyle={{
+            borderRadius: '0.5rem',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+          }}
+        />
+        
+        {winner && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20 rounded-lg">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto">
+              <h2 className="text-2xl font-bold mb-4">{winner} wins!</h2>
+              <p className="mb-4">Congratulations to the winner!</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 mx-auto"
+              >
+                <RefreshCw size={20} />
+                Play Again
+              </button>
             </div>
-          );
-        });
-      })}
-      {winner && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur-sm z-20" style={{ borderRadius: '0px' }}>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto" style={{ backdropFilter: 'none' }}>
-            <h2 className="text-2xl font-bold mb-4">{winner} wins!</h2>
-            <p className="mb-4">Congratulations to the winner!</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 mx-auto"
-            >
-              <RefreshCw size={20} />
-              Play Again
-
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-}
-
-// Define symbols for chess pieces
-const symbols: { [key in 'p' | 'r' | 'n' | 'b' | 'q' | 'k']: string } = {
-  p: "♟",
-  r: "♜",
-  n: "♞",
-  b: "♝",
-  q: "♛",
-  k: "♚",
-};
-
-// Return the appropriate symbol based on piece type and color
-function getPieceSymbol(type: 'p' | 'r' | 'n' | 'b' | 'q' | 'k', color: string) {
-  return color === "w" ? symbols[type].toUpperCase() : symbols[type];
 }
 
 export default ChessBoard;

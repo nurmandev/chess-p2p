@@ -41,17 +41,19 @@ export default function GamePage() {
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header status={status} matchFound={!!match} />
       
-      <main className="flex-grow flex items-center justify-center pb-2 px-2 sm:px-4 lg:px-[1rem] mb-4">
-        <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-auto w-full max-w-[90vw] max-h-[100vh] lg:overflow-hidden">
+      <main className="flex-grow flex items-center justify-center p-4">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg w-full max-w-[1400px]">
           {/* Grid layout for video call, chessboard, and moves list */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-4 lg:p-6">
             
             {/* Video call and Next Player button */}
-            <div className="flex flex-col">
-              <VideoCall 
-                userId={userId}
-                remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
-              />
+            <div className="flex flex-col h-full">
+              <div className="flex-grow">
+                <VideoCall 
+                  userId={userId}
+                  remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
+                />
+              </div>
               <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
                 <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
                 <span className="hidden lg:inline">Next Player</span>
@@ -59,13 +61,15 @@ export default function GamePage() {
             </div>
             
             {/* Chessboard component */}
-            <div className="flex items-center justify-center overflow-hidden">
+            <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]">
               <ChessBoard onMove={handleMove} roomId={roomId} playerSide={playerSide} />
             </div>
             
             {/* Moves list and action buttons */}
-            <div className="flex flex-col">
-              <MovesList moves={moves} />
+            <div className="flex flex-col h-full">
+              <div className="flex-grow overflow-y-auto">
+                <MovesList moves={moves} />
+              </div>
               <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-col mt-4">
                 <Button className="mb-2 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full">
                   <Play className="mr-2" style={{ width: "32px", height: "32px" }} />
