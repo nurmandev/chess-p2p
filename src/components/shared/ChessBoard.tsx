@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Chess, Move } from "chess.js";
+import { Chess, Move, Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { RefreshCw } from 'lucide-react';
 import io from 'socket.io-client';
 import { Socket } from "socket.io-client";
-import Image from 'next/image';
 
 const chess = new Chess();
 
@@ -39,7 +38,7 @@ function ChessBoard({ onMove, roomId, playerSide }: {
   function onDrop(sourceSquare: string, targetSquare: string, piece: string) {
     if (!isPlayerTurn || winner) return false;
 
-    const movingPiece = chess.get(sourceSquare);
+    const movingPiece = chess.get(sourceSquare as Square);
     
     const isPawnPromotion = 
       movingPiece?.type === 'p' && 
@@ -48,9 +47,9 @@ function ChessBoard({ onMove, roomId, playerSide }: {
 
     try {
       const move = chess.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: isPawnPromotion ? piece.charAt(1).toLowerCase() : undefined
+        from: sourceSquare as Square,
+        to: targetSquare as Square,
+        promotion: isPawnPromotion ? piece.charAt(1).toLowerCase() as 'q' | 'r' | 'b' | 'n' : undefined
       });
 
       if (move) {
@@ -68,60 +67,6 @@ function ChessBoard({ onMove, roomId, playerSide }: {
     return false;
   }
 
-  const customPromotionDialog = ({
-    square,
-    promotionPieces
-  }: {
-    square: string;
-    promotionPieces: string[];
-  }) => {
-    const color = chess.turn() === 'w' ? 'white' : 'black';
-    const style: React.CSSProperties = {
-      position: 'absolute',
-      display: 'flex',
-      flexDirection: 'column',
-      border: '2px solid #666',
-      borderRadius: '4px',
-      backgroundColor: '#333',
-      zIndex: 30,
-      cursor: 'pointer',
-    };
-
-    // Position the dialog next to the promotion square
-    const file = square.charAt(0);
-    const rank = parseInt(square.charAt(1));
-    const isWhitePromotion = rank === 8;
-
-    // Adjust position based on the promotion square
-    if (playerSide === 'white') {
-      style.left = `${12.5 * (file.charCodeAt(0) - 'a'.charCodeAt(0))}%`;
-      style.top = isWhitePromotion ? '0%' : '50%';
-    } else {
-      style.left = `${12.5 * (7 - (file.charCodeAt(0) - 'a'.charCodeAt(0)))}%`;
-      style.top = isWhitePromotion ? '50%' : '0%';
-    }
-
-    return (
-      <div style={style}>
-        {promotionPieces.map((piece, index) => (
-          <div
-            key={index}
-            className="w-[50px] h-[50px] flex items-center justify-center hover:bg-gray-700"
-            data-piece={piece}
-          >
-            <Image
-              src={`/pieces/${color}${piece.charAt(1).toUpperCase()}.png`}
-              alt={piece}
-              width={40}
-              height={40}
-              priority
-            />
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="relative w-full pt-[100%]">
       <div className="absolute inset-0">
@@ -133,7 +78,6 @@ function ChessBoard({ onMove, roomId, playerSide }: {
             borderRadius: '0.5rem',
             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
           }}
-          customPromotionDialog={customPromotionDialog}
           showPromotionDialog={true}
           areArrowsAllowed={false}
         />
