@@ -23,14 +23,16 @@ function VideoStream({
   }
 
   return (
-    <div className="w-full aspect-[4/3] min-h-[35vh] max-h-[40vh]">
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted={label === "You"}
-        className="w-full h-full rounded-lg object-cover"
-      />
+    <div className="relative w-full pt-[75%]">
+      <div className="absolute inset-0">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted={label === "You"}
+          className="w-full h-full object-cover rounded-lg bg-gray-700"
+        />
+      </div>
     </div>
   );
 }
@@ -38,9 +40,11 @@ function VideoStream({
 // Placeholder component when no video stream is available
 function PlayerPlaceholder({ label }: { label: string }) {
   return (
-    <div className="w-full aspect-[4/3] min-h-[35vh] max-h-[40vh] bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
-      <User className="w-1/3 h-1/3 text-gray-400" />
-      <span className="mt-4 text-lg text-gray-400">{label}</span>
+    <div className="relative w-full pt-[75%]">
+      <div className="absolute inset-0 bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
+        <User className="w-1/3 h-1/3 text-gray-400" />
+        <span className="mt-4 text-lg text-gray-400">{label}</span>
+      </div>
     </div>
   );
 }
