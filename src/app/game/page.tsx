@@ -8,7 +8,7 @@ import { useMatchmaking } from '@/hooks/useMatchmaking';
 import VideoCall from '@/components/shared/VideoCall';
 import ChessBoard from '@/components/shared/ChessBoard';
 import MovesList from '@/components/shared/MovesList';
-import { Play, Plus, ChevronRight } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
@@ -41,7 +41,7 @@ export default function GamePage() {
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header status={status} matchFound={!!match} />
       
-      <main className="flex-grow flex items-center justify-center sm:p-4">
+      <main className="flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
         <div className="bg-gray-800 border border-gray-700 rounded-lg w-full max-w-[1400px]">
           {/* Grid layout for video call, chessboard, and moves list */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-2 sm:p-4 lg:p-6 h-full">
