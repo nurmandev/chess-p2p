@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addToQueue, findOpponent, saveMatch, getMatch } from "@/lib/matchmaking";
 import { v4 as uuidv4 } from 'uuid';
-import { Match } from "@/lib/matchmaking"; // Assume Match type is defined here
+import { Match } from "@/lib/matchmaking";
+import client from "@/lib/redis";
 
 // Handle POST requests to find or create a match
 export async function POST(req: NextRequest) {
@@ -43,6 +44,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "User ID required" }, { status: 400 });
   }
 
+  // Check if user's match was reset
+  const resetKey = `reset:${userId}`;
+  const wasReset = await client.get(resetKey);
+  
+  if (wasReset) {
+    await client.del(resetKey);
+    // Also delete any existing match data
+    await client.del(`match:${userId}`);
+    return NextResponse.json({ status: "reset" });
+  }
+
   const match = await getMatch(userId);
+  
+  // If we have no match but there's match data in Redis, clean it up
+  if (!match) {
+    await client.del(`match:${userId}`);
+  }
+
   return NextResponse.json({ match });
 }

@@ -13,6 +13,7 @@ export const useMatchmaking = () => {
   // Function to find a match for a user
   const findMatch = async (userId: string) => {
     setStatus("searching");
+    setMatch(null); // Reset match state immediately
     try {
       const response = await fetch("/api/matchmaking", {
         method: "POST",
@@ -39,6 +40,10 @@ export const useMatchmaking = () => {
 
   // Function to start polling for a match
   const startPolling = (userId: string) => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+    }
+
     pollingInterval.current = setInterval(async () => {
       try {
         const response = await fetch(`/api/matchmaking?userId=${userId}`);
@@ -52,6 +57,25 @@ export const useMatchmaking = () => {
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current);
           }
+        } else if (data.status === "reset") {
+          // Handle reset status
+          setMatch(null);
+          setStatus("searching");
+          setRoomId(null);
+          setPlayerSide(null);
+          if (pollingInterval.current) {
+            clearInterval(pollingInterval.current);
+          }
+          // Restart matchmaking after a brief delay
+          setTimeout(() => findMatch(userId), 1000);
+        } else if (!data.match && status === "matched") {
+          // If we were matched but now have no match, reset state
+          setMatch(null);
+          setStatus("searching");
+          setRoomId(null);
+          setPlayerSide(null);
+          // Restart matchmaking
+          findMatch(userId);
         }
       } catch (error) {
         console.error("Polling failed:", error);

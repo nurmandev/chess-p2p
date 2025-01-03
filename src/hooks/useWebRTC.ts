@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { pollSignals, sendSignal } from '@/lib/signaling';
 import { turnServerConfig } from '@/config/turnServerConfig';
 
@@ -25,8 +25,60 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
   const hasRemoteDescription = useRef(false);
   const pendingCandidates = useRef<RTCIceCandidate[]>([]);
 
+  const resetConnection = useCallback(() => {
+    // Close and cleanup peer connection
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
+    // Clear remote stream
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => {
+        track.stop();
+        remoteStream.removeTrack(track);
+      });
+      setRemoteStream(null);
+    }
+
+    // Reset flags
+    isInitiator.current = false;
+    hasRemoteDescription.current = false;
+    pendingCandidates.current = [];
+
+    // Clear polling interval
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = undefined;
+    }
+  }, [remoteStream]);
+
+  // Effect for handling remoteUserId changes
   useEffect(() => {
-    // Setup local media stream
+    if (!remoteUserId) {
+      resetConnection();
+      return;
+    }
+
+    // Reset existing connection before setting up new one
+    resetConnection();
+
+    // Small delay before setting up new connection
+    const timer = setTimeout(() => {
+      if (localStream) {
+        setupPeerConnection();
+        startPolling();
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      resetConnection();
+    };
+  }, [remoteUserId, localStream]);
+
+  // Setup local media stream
+  useEffect(() => {
     async function setupMediaStream() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -38,62 +90,55 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     setupMediaStream();
 
     return () => {
-      // Cleanup local media tracks
-      localStream?.getTracks().forEach(track => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach(track => {
+          track.stop();
+          localStream.removeTrack(track);
+        });
+        setLocalStream(null);
+      }
+      resetConnection();
     };
   }, []);
 
-  useEffect(() => {
+  // Function to setup peer connection
+  const setupPeerConnection = useCallback(() => {
     if (!remoteUserId || !localStream) return;
 
-    // Initialize peer connection and handle signaling
-    const setupPeerConnection = () => {
-      peerConnection.current = new RTCPeerConnection(configuration);
-      const pc = peerConnection.current;
+    peerConnection.current = new RTCPeerConnection(configuration);
+    const pc = peerConnection.current;
 
-      localStream.getTracks().forEach(track => {
-        pc.addTrack(track, localStream);
-      });
+    localStream.getTracks().forEach(track => {
+      pc.addTrack(track, localStream);
+    });
 
-      pc.ontrack = (event) => {
-        setRemoteStream(prevStream => {
-          if (!prevStream) {
-            return new MediaStream([event.track]);
-          } else {
-            prevStream.addTrack(event.track);
-            return prevStream;
-          }
-        });
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          sendSignal({
-            type: 'candidate',
-            senderId: userId,
-            data: { candidate: event.candidate, recipientId: remoteUserId }
-          });
+    pc.ontrack = (event) => {
+      setRemoteStream(prevStream => {
+        if (!prevStream) {
+          return new MediaStream([event.track]);
+        } else {
+          prevStream.addTrack(event.track);
+          return prevStream;
         }
-      };
+      });
+    };
 
-      // Determine who initiates the connection
-      isInitiator.current = userId < remoteUserId;
-      
-      if (isInitiator.current) {
-        startSignaling();
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        sendSignal({
+          type: 'candidate',
+          senderId: userId,
+          data: { candidate: event.candidate, recipientId: remoteUserId }
+        });
       }
     };
 
-    setupPeerConnection();
-    startPolling();
-
-    return () => {
-      // Cleanup peer connection and polling
-      peerConnection.current?.close();
-      if (pollingInterval.current) {
-        clearInterval(pollingInterval.current);
-      }
-    };
+    // Determine who initiates the connection
+    isInitiator.current = userId < remoteUserId;
+    
+    if (isInitiator.current) {
+      startSignaling();
+    }
   }, [remoteUserId, localStream, userId]);
 
   // Function to initiate signaling by creating an offer
@@ -167,5 +212,5 @@ export function useWebRTC(userId: string, remoteUserId: string | null) {
     }, 1000);
   }
 
-  return { localStream, remoteStream };
+  return { localStream, remoteStream, resetConnection };
 }

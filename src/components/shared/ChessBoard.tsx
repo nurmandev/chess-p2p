@@ -16,6 +16,15 @@ function ChessBoard({ onMove, roomId, playerSide }: {
 }) {
   const [winner, setWinner] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [position, setPosition] = useState(chess.fen());
+  const [gameInstance] = useState(() => new Chess());
+
+  // Reset game when roomId changes
+  useEffect(() => {
+    gameInstance.reset();
+    setPosition(gameInstance.fen());
+    setWinner(null);
+  }, [roomId, gameInstance]);
 
   useEffect(() => {
     const newSocket = io();
@@ -24,21 +33,22 @@ function ChessBoard({ onMove, roomId, playerSide }: {
     newSocket.emit('joinRoom', roomId);
 
     newSocket.on('opponentMove', (moveData) => {
-      chess.move(moveData);
+      gameInstance.move(moveData);
+      setPosition(gameInstance.fen());
       onMove?.(moveData);
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [roomId, onMove]);
+  }, [roomId, onMove, gameInstance]);
 
-  const isPlayerTurn = chess.turn() === (playerSide === 'white' ? 'w' : 'b');
+  const isPlayerTurn = gameInstance.turn() === (playerSide === 'white' ? 'w' : 'b');
 
   function onDrop(sourceSquare: string, targetSquare: string, piece: string) {
     if (!isPlayerTurn || winner) return false;
 
-    const movingPiece = chess.get(sourceSquare as Square);
+    const movingPiece = gameInstance.get(sourceSquare as Square);
     
     const isPawnPromotion = 
       movingPiece?.type === 'p' && 
@@ -46,7 +56,7 @@ function ChessBoard({ onMove, roomId, playerSide }: {
        (movingPiece.color === 'b' && targetSquare[1] === '1'));
 
     try {
-      const move = chess.move({
+      const move = gameInstance.move({
         from: sourceSquare as Square,
         to: targetSquare as Square,
         promotion: isPawnPromotion ? piece.charAt(1).toLowerCase() as 'q' | 'r' | 'b' | 'n' : undefined
@@ -54,10 +64,11 @@ function ChessBoard({ onMove, roomId, playerSide }: {
 
       if (move) {
         socket?.emit('playerMove', { roomId, move });
+        setPosition(gameInstance.fen());
         onMove?.(move);
 
-        if (chess.isCheckmate()) {
-          setWinner(chess.turn() === 'w' ? 'Black' : 'White');
+        if (gameInstance.isCheckmate()) {
+          setWinner(gameInstance.turn() === 'w' ? 'Black' : 'White');
         }
         return true;
       }
@@ -71,7 +82,7 @@ function ChessBoard({ onMove, roomId, playerSide }: {
     <div className="relative w-full pt-[100%]">
       <div className="absolute inset-0">
         <Chessboard 
-          position={chess.fen()}
+          position={position}
           onPieceDrop={onDrop}
           boardOrientation={playerSide}
           customBoardStyle={{

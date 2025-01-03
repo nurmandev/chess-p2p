@@ -57,7 +57,16 @@ interface VideoCallProps {
 }
 
 export default function VideoCall({ userId, remoteUserId, className }: VideoCallProps) {
-  const { localStream, remoteStream } = useWebRTC(userId, remoteUserId);
+  const { localStream, remoteStream, resetConnection } = useWebRTC(userId, remoteUserId);
+  const prevRemoteUserId = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Only reset if we had a previous connection and now don't have one
+    if (prevRemoteUserId.current && !remoteUserId) {
+      resetConnection();
+    }
+    prevRemoteUserId.current = remoteUserId;
+  }, [remoteUserId, resetConnection]);
 
   return (
     <div className={`flex flex-col gap-4 ${className || ""}`}>

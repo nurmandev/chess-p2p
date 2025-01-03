@@ -16,6 +16,7 @@ import Footer from '@/components/shared/Footer';
 export default function GamePage() {
   // State for tracking game moves
   const [moves, setMoves] = useState<Move[]>([]);
+  const [gameKey, setGameKey] = useState(0); // Add key to force chess board reset
   
   // Unique user identifier
   const [userId] = useState(() => uuidv4());
@@ -37,6 +38,35 @@ export default function GamePage() {
     setMoves(prev => [...prev, move]);
   };
 
+  // Handle Next Player button click
+  const handleNextPlayer = async () => {
+    setMoves([]); // Clear moves
+    setGameKey(prev => prev + 1); // Force chess board reset
+    
+    try {
+      // Reset match state before finding new player
+      await fetch('/api/matchmaking/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+
+      // Wait a bit longer to ensure cleanup
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Start finding new player
+      findMatch(userId);
+    } catch (error) {
+      console.error('Error resetting match:', error);
+    }
+  };
+
+  // Handle New Match button click
+  const handleNewMatch = () => {
+    setMoves([]); // Clear moves
+    setGameKey(prev => prev + 1); // Force chess board reset
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header status={status} matchFound={!!match} />
@@ -54,7 +84,10 @@ export default function GamePage() {
                   remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
                 />
               </div>
-              <Button className="mt-4 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]">
+              <Button 
+                onClick={handleNextPlayer}
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]"
+              >
                 <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
                 <span className="hidden lg:inline">Next Player</span>
               </Button>
@@ -62,7 +95,12 @@ export default function GamePage() {
             
             {/* Chessboard component */}
             <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]">
-              <ChessBoard onMove={handleMove} roomId={roomId} playerSide={playerSide} />
+              <ChessBoard 
+                key={gameKey} 
+                onMove={handleMove} 
+                roomId={roomId} 
+                playerSide={playerSide} 
+              />
             </div>
             
             {/* Moves list and action buttons */}
@@ -71,7 +109,10 @@ export default function GamePage() {
                 <MovesList moves={moves} />
               </div>
               <div className="grid grid-cols-1 gap-2 lg:flex lg:flex-col mt-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full">
+                <Button 
+                  onClick={handleNewMatch}
+                  className="bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full"
+                >
                   <Plus className="mr-2" style={{ width: "32px", height: "32px" }} />
                   <span className="hidden lg:inline text-[2rem]">New Match</span>
                 </Button>
