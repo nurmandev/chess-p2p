@@ -98,13 +98,6 @@ function ChessBoard({ onMove, roomId, playerSide }: {
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center text-white w-80 max-w-full mx-4 sm:mx-auto">
               <h2 className="text-2xl font-bold mb-4">{winner} wins!</h2>
               <p className="mb-4">Congratulations to the winner!</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2 mx-auto"
-              >
-                <RefreshCw size={20} />
-                Play Again
-              </button>
             </div>
           </div>
         )}
