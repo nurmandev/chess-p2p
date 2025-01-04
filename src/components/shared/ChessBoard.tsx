@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Chess, Move, Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
-import { RefreshCw } from 'lucide-react';
 import io from 'socket.io-client';
 import { Socket } from "socket.io-client";
 
