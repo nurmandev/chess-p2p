@@ -12,6 +12,7 @@ import { Plus, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from '@/components/shared/Header';
 import Footer from '@/components/shared/Footer';
+import { useRouter } from 'next/navigation';
 
 export default function GamePage() {
   // State for tracking game moves
@@ -67,9 +68,16 @@ export default function GamePage() {
     setGameKey(prev => prev + 1); // Force chess board reset
   };
 
+  const router = useRouter();
+
+  // Handle ChessP2P click to redirect to homepage
+  const handleChessP2PClick = () => {
+    router.push('/'); // Redirect to homepage
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <Header status={status} matchFound={!!match} />
+      <Header status={status} matchFound={!!match} onChessP2PClick={handleChessP2PClick} />
       
       <main className="flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
         <div className="bg-gray-800 border border-gray-700 rounded-lg w-full max-w-[1400px]">
