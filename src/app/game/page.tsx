@@ -76,14 +76,11 @@ export default function GamePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* Background gradients matching homepage */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,hsl(var(--primary)/0.15),transparent_70%)]" />
-      
+    <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <Header status={status} matchFound={!!match} onChessP2PClick={handleChessP2PClick} />
       
-      <main className="relative flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
-        <div className="bg-black/20 backdrop-blur-md border-white/10 border rounded-lg w-full max-w-[1400px]">
+      <main className="flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg w-full max-w-[1400px]">
           {/* Grid layout for video call, chessboard, and moves list */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-2 sm:p-4 lg:p-6 h-full">
             
@@ -97,7 +94,7 @@ export default function GamePage() {
               </div>
               <Button 
                 onClick={handleNextPlayer}
-                className="mt-4 bg-[#2A2A2A] hover:bg-[#3A3A3A] text-white aspect-square lg:aspect-auto w-full text-[2rem] border border-[#333333]"
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]"
               >
                 <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
                 <span className="hidden lg:inline">Next Player</span>
@@ -122,7 +119,7 @@ export default function GamePage() {
               <div className="grid grid-cols-1 gap-2 lg:flex lg:flex-col mt-4">
                 <Button 
                   onClick={handleNewMatch}
-                  className="bg-[#2A2A2A] hover:bg-[#3A3A3A] text-white aspect-square lg:aspect-auto w-full border border-[#333333]"
+                  className="bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full"
                 >
                   <Plus className="mr-2" style={{ width: "32px", height: "32px" }} />
                   <span className="hidden lg:inline text-[2rem]">New Match</span>

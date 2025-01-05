@@ -21,7 +21,11 @@ export default function Header({ status, matchFound, onChessP2PClick }: HeaderPr
   };
 
   return (
+<<<<<<< HEAD
     <header className="flex justify-center w-full bg-background border-b border-border pt-3 pb-2 px-4 lg:pt-4 lg:pb-3">
+=======
+    <header className="flex justify-center w-full bg-black/20 pt-3 pb-2 px-4 lg:pt-4 lg:pb-3">
+>>>>>>> fix-chessboard
       <div className="flex items-center gap-4 max-w-3xl">
         <div onClick={onChessP2PClick} className="cursor-pointer">
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Chess P2P</h1>

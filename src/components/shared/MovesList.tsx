@@ -19,8 +19,13 @@ export default function MovesList({ moves }: MovesListProps) {
 
   return (
     <div className="flex flex-col h-full">
+<<<<<<< HEAD
       <div className="bg-muted backdrop-blur-sm border-border border rounded-lg flex-grow mb-4 p-4">
         <h2 className="text-lg font-semibold mb-2 sticky top-0 bg-transparent text-muted-foreground">
+=======
+      <div className="bg-[hsl(var(--muted))] border border-[hsl(var(--border))] rounded-lg flex-grow mb-4 p-4">
+        <h2 className="text-lg font-semibold mb-2 sticky top-0 bg-[hsl(var(--muted))]">
+>>>>>>> fix-chessboard
           Moves
         </h2>
         <div
