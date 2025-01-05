@@ -76,61 +76,64 @@ export default function GamePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <Header status={status} matchFound={!!match} onChessP2PClick={handleChessP2PClick} />
-      
-      <main className="flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
-        <div className="bg-gray-800 border border-gray-700 rounded-lg w-full max-w-[1400px]">
-          {/* Grid layout for video call, chessboard, and moves list */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-2 sm:p-4 lg:p-6 h-full">
-            
-            {/* Video call and Next Player button */}
-            <div className="flex flex-col h-full">
-              <div className="flex-grow">
-                <VideoCall 
-                  userId={userId}
-                  remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
+    <div className="min-h-screen flex flex-col bg-black/20 text-white relative">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,hsl(var(--primary)/_0.20),transparent_70%)]" />
+      <div className="relative z-10 flex flex-col flex-grow">
+        <Header status={status} matchFound={!!match} onChessP2PClick={handleChessP2PClick} />
+        
+        <main className="flex-grow flex items-center justify-center pb-3 px-0 sm:px-4">
+          <div className="bg-black/20 border-2 border-zinc-800 rounded-lg w-full max-w-[1400px]">
+            {/* Grid layout for video call, chessboard, and moves list */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2.1fr,1fr] gap-3 lg:gap-4 p-2 sm:p-4 lg:p-6 h-full">
+              
+              {/* Video call and Next Player button */}
+              <div className="flex flex-col h-full">
+                <div className="flex-grow">
+                  <VideoCall 
+                    userId={userId}
+                    remoteUserId={match ? (match.player1 === userId ? match.player2 : match.player1) : null}
+                  />
+                </div>
+                <Button 
+                  onClick={handleNextPlayer}
+                  className="mt-4 bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white aspect-square lg:aspect-auto w-full text-[2rem]"
+                >
+                  <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
+                  <span className="hidden lg:inline">Next Player</span>
+                </Button>
+              </div>
+              
+              {/* Chessboard component */}
+              <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]">
+                <ChessBoard 
+                  key={gameKey} 
+                  onMove={handleMove} 
+                  roomId={roomId} 
+                  playerSide={playerSide} 
                 />
               </div>
-              <Button 
-                onClick={handleNextPlayer}
-                className="mt-4 bg-green-600 hover:bg-green-700 text-white aspect-square lg:aspect-auto w-full text-[2rem]"
-              >
-                <ChevronRight className="mr-2" style={{ width: "32px", height: "32px" }} />
-                <span className="hidden lg:inline">Next Player</span>
-              </Button>
-            </div>
-            
-            {/* Chessboard component */}
-            <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]">
-              <ChessBoard 
-                key={gameKey} 
-                onMove={handleMove} 
-                roomId={roomId} 
-                playerSide={playerSide} 
-              />
-            </div>
-            
-            {/* Moves list and action buttons */}
-            <div className="flex flex-col h-full">
-              <div className="flex-grow overflow-y-auto">
-                <MovesList moves={moves} />
-              </div>
-              <div className="grid grid-cols-1 gap-2 lg:flex lg:flex-col mt-4">
-                <Button 
-                  onClick={handleNewMatch}
-                  className="bg-blue-600 hover:bg-blue-700 text-white aspect-square lg:aspect-auto w-full"
-                >
-                  <Plus className="mr-2" style={{ width: "32px", height: "32px" }} />
-                  <span className="hidden lg:inline text-[2rem]">New Match</span>
-                </Button>
+              
+              {/* Moves list and action buttons */}
+              <div className="flex flex-col h-full">
+                <div className="flex-grow overflow-y-auto">
+                  <MovesList moves={moves} />
+                </div>
+                <div className="grid grid-cols-1 gap-2 lg:flex lg:flex-col mt-4">
+                  <Button 
+                    onClick={handleNewMatch}
+                    className="bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white aspect-square lg:aspect-auto w-full"
+                  >
+                    <Plus className="mr-2" style={{ width: "32px", height: "32px" }} />
+                    <span className="hidden lg:inline text-[2rem]">New Match</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-      
-      <Footer />
+        </main>
+        
+        <Footer />
+      </div>
     </div>
   );
 }

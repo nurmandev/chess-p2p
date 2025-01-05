@@ -41,7 +41,7 @@ function VideoStream({
 function PlayerPlaceholder({ label }: { label: string }) {
   return (
     <div className="relative w-full pt-[75%]">
-      <div className="absolute inset-0 bg-gray-700 border border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
+      <div className="absolute inset-0 bg-[hsl(var(--muted))] border border-[hsl(var(--border))] rounded-lg p-6 flex flex-col items-center justify-center">
         <User className="w-1/3 h-1/3 text-gray-400" />
         <span className="mt-4 text-lg text-gray-400">{label}</span>
       </div>
