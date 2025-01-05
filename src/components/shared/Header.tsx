@@ -10,11 +10,11 @@ export default function Header({ status, matchFound, onChessP2PClick }: HeaderPr
     
     switch (status.toLowerCase()) {
       case 'connecting':
-        return 'text-muted-foreground';
+        return 'text-yellow-500';  // Yellow for connecting
       case 'waiting':
-        return 'text-primary';
+        return 'text-blue-500';    // Blue for waiting
       case 'connected':
-        return 'text-primary';
+        return 'text-primary';     // Green (primary) for connected
       default:
         return 'text-muted-foreground';
     }
