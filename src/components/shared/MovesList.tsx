@@ -19,25 +19,20 @@ export default function MovesList({ moves }: MovesListProps) {
 
   return (
     <div className="flex flex-col h-full">
-<<<<<<< HEAD
-      <div className="bg-muted backdrop-blur-sm border-border border rounded-lg flex-grow mb-4 p-4">
-        <h2 className="text-lg font-semibold mb-2 sticky top-0 bg-transparent text-muted-foreground">
-=======
       <div className="bg-[hsl(var(--muted))] border border-[hsl(var(--border))] rounded-lg flex-grow mb-4 p-4">
         <h2 className="text-lg font-semibold mb-2 sticky top-0 bg-[hsl(var(--muted))]">
->>>>>>> fix-chessboard
           Moves
         </h2>
         <div
           ref={scrollRef}
-          className="overflow-y-auto h-[10vh] sm:h-[15vh] md:h-[35vh] lg:h-[45vh] scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 pr-2"
+          className="overflow-y-auto h-[10vh] sm:h-[15vh] md:h-[35vh] lg:h-[45vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 pr-2"
         >
           <div className="grid grid-cols-2 gap-2">
             {moves.map((move, index) => (
               <div
                 key={index}
                 className={`p-2 text-sm sm:text-base ${
-                  index % 2 === 0 ? "text-foreground" : "text-muted-foreground"
+                  index % 2 === 0 ? "text-yellow-100" : "text-gray-300"
                 }`}
               >
                 {index % 2 === 0 && (
