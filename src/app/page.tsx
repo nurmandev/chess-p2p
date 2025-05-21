@@ -72,20 +72,7 @@ export default function Home() {
                 Ensure a stable internet connection for the best experience
               </p>
             </div>
-            
-            <div className="space-y-4">
-              <p className="text-muted-foreground">
-                Want to contribute? Check out our{' '}
-                <a 
-                  href="https://github.com/JatinSri1909/chess-p2p" 
-                  className="text-primary hover:text-primary/90 underline decoration-dotted"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  GitHub repository
-                </a>
-              </p>
-            </div>
+        
           </div>
         </div>
       </div>

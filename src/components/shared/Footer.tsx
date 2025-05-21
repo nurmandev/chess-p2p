@@ -6,12 +6,12 @@ export default function Footer() {
         <span className="block py-1">
           Made with ❤️ by{' '}
           <a 
-            href="https://x.com/JatinSriva36542?t=jInLA9mjPJc3klWMBmAhDg&s=09" 
+            href="https://nurudeenm.vercel.app/" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-primary hover:underline"
           >
-            Jatin
+            PROFICIENT
           </a>
         </span>
       </div>
